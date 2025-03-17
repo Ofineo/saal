@@ -45,6 +45,10 @@ const Home = () => {
   const [showActions, setShowActions] = useState<string | null>(null);
   const [editObject, setEditObject] = useState<EditObj | null>(null);
 
+  useEffect(() => {
+    setFiltered(objects);
+  }, [objects]);
+
   const handleResetFilter = () => setFiltered(objects);
 
   // Handle adding new object with validation
@@ -135,7 +139,6 @@ const Home = () => {
         handleEditModalOpen={handleEditModalOpen}
       />
     );
-
   return (
     <main className='p-4 max-w-[950px] mx-auto'>
       <h1 className='text-2xl mb-4'>Object Management</h1>

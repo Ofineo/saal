@@ -30,7 +30,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           fetchSuggestions={handleItemsSearch}
           onSelect={handleSelect}
           input={input}
-        setInput={setInput}
+          setInput={setInput}
         />
         <svg
           xmlns='http://www.w3.org/2000/svg'
