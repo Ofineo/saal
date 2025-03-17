@@ -9,6 +9,8 @@ import { EditObj, Obj, ObjectType } from './types';
 import EditModal from '@/components/EditModal';
 import ManageRelationsModal from '@/components/ManageRelationsModal';
 import DeleteModal from '@/components/DeleteModal';
+import { useWindowSize } from './hooks';
+import { DESKTOP_SIZE } from '@/constants';
 
 const Home = () => {
   const {
@@ -21,6 +23,9 @@ const Home = () => {
     error,
     seedObjects,
   } = useAppContext();
+  const { width } = useWindowSize();
+
+  const isDesktop = width && width >= DESKTOP_SIZE;
 
   const [query, setQuery] = useState('');
   const [formError, setFormError] = useState('');
@@ -128,23 +133,24 @@ const Home = () => {
     setShowActions(null);
   };
 
-  const tableOrCards = showCards ? (
-    <Cards
-      objects={objects}
-      getObjectById={getObjectById}
-      onDelete={handleDeleteModalOpen}
-      onManageRelations={handleManageRelations}
-    />
-  ) : (
-    <Table
-      data={filtered}
-      showActions={showActions}
-      setShowActions={setShowActions}
-      handleDeleteModalOpen={handleDeleteModalOpen}
-      handleManageRelations={handleManageRelations}
-      handleEditModalOpen={handleEditModalOpen}
-    />
-  );
+  const tableOrCards =
+    showCards || !isDesktop ? (
+      <Cards
+        objects={objects}
+        getObjectById={getObjectById}
+        onDelete={handleDeleteModalOpen}
+        onManageRelations={handleManageRelations}
+      />
+    ) : (
+      <Table
+        data={filtered}
+        showActions={showActions}
+        setShowActions={setShowActions}
+        handleDeleteModalOpen={handleDeleteModalOpen}
+        handleManageRelations={handleManageRelations}
+        handleEditModalOpen={handleEditModalOpen}
+      />
+    );
 
   return (
     <main className='p-4 max-w-[950px] mx-auto'>
