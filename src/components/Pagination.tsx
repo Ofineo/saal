@@ -8,8 +8,8 @@ export function Pagination() {
   if (!pagination) return <></>;
 
   return (
-    <div className='flex justify-between items-center mt-4 mb-40'>
-      <div className='flex items-center'>
+    <div className='flex flex-col md:flex-row justify-between items-center mt-4 mb-40'>
+      <div className='flex items-center mb-4'>
         <label className='mr-2'>Items per page:</label>
         <select
           value={pagination.itemsPerPage}
@@ -28,7 +28,7 @@ export function Pagination() {
         <button
           onClick={() => handlePageChange(pagination.currentPage - 1)}
           disabled={!pagination.hasPreviousPage}
-          className={`py-1 px-3 rounded-full mr-2 ${
+          className={`py-1 px-3 rounded-full mr-2 text-white ${
             !pagination.hasPreviousPage
               ? 'bg-blue-100'
               : 'bg-blue-500 hover:bg-blue-400'
@@ -40,7 +40,7 @@ export function Pagination() {
         <button
           onClick={() => handlePageChange(pagination.currentPage + 1)}
           disabled={!pagination.hasNextPage}
-          className={`py-1 px-3 rounded-full ml-2 ${
+          className={`py-1 px-3 rounded-full ml-2 text-white ${
             !pagination.hasNextPage
               ? 'bg-blue-100'
               : 'bg-blue-500 hover:bg-blue-400'

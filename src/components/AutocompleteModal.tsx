@@ -18,6 +18,7 @@ export default function AutocompleteModal({
   const { objects, handleItemsSearch, updateObject } = useAppContext();
   
   const [selected, setSelected] = useState<Obj | null>(null);
+  const [input, setInput] = useState('');
 
   const handleSelect = (obj: Obj) => {
     setSelected(obj);
@@ -45,7 +46,12 @@ export default function AutocompleteModal({
       onClose={() => setModalOpen(null)}
       title='Manage Relations'
     >
-      <Autocomplete fetchSuggestions={handleItemsSearch} onSelect={handleSelect} />
+      <Autocomplete
+        fetchSuggestions={handleItemsSearch}
+        onSelect={handleSelect}
+        input={input}
+        setInput={setInput}
+      />
       <div className='flex justify-end gap-4'>
         <button
           onClick={() => setModalOpen(null)}

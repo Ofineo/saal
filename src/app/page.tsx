@@ -27,7 +27,6 @@ const Home = () => {
 
   const isDesktop = width && width >= DESKTOP_SIZE;
 
-  const [query, setQuery] = useState('');
   const [formError, setFormError] = useState('');
   const [filtered, setFiltered] = useState(objects);
   const [showForm, setShowForm] = useState(false);
@@ -46,22 +45,7 @@ const Home = () => {
   const [showActions, setShowActions] = useState<string | null>(null);
   const [editObject, setEditObject] = useState<EditObj | null>(null);
 
-  // Filter objects based on the search query
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setFiltered(
-        objects.filter(
-          (obj: Obj) =>
-            obj.name.toLowerCase().includes(query.toLowerCase()) ||
-            obj.description.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-    }, 300);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [query, objects]);
+  const handleResetFilter = () => setFiltered(objects);
 
   // Handle adding new object with validation
   const handleAdd = () => {
@@ -136,7 +120,7 @@ const Home = () => {
   const tableOrCards =
     showCards || !isDesktop ? (
       <Cards
-        objects={objects}
+        objects={filtered}
         getObjectById={getObjectById}
         onDelete={handleDeleteModalOpen}
         onManageRelations={handleManageRelations}
@@ -156,10 +140,10 @@ const Home = () => {
     <main className='p-4 max-w-[950px] mx-auto'>
       <h1 className='text-2xl mb-4'>Object Management</h1>
       <SearchBar
-        query={query}
-        setQuery={setQuery}
+        setFiltered={setFiltered}
         showForm={showForm}
         handleShowForm={() => setShowForm(!showForm)}
+        reset={handleResetFilter}
       />
 
       <div className='text-red-500 mb-4'>{error || formError}</div>
