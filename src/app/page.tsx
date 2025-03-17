@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { AddObjectForm, Cards, SearchBar, Table } from '@/components';
+import {
+  AddObjectForm,
+  Cards,
+  SearchBar,
+  SkeletonLoader,
+  Table,
+} from '@/components';
 import { useAppContext } from './context/AppContext';
 import { EditObj, Obj, ObjectType } from './types';
 import EditModal from '@/components/EditModal';
@@ -182,8 +188,7 @@ const Home = () => {
           </button>
         </div>
       )}
-      {loading && <p>Loading...</p>}
-      {objects.length > 0 && tableOrCards}
+      {loading ? <SkeletonLoader /> : objects.length > 0 && tableOrCards}
       <EditModal
         isOpen={!!editObject?.id}
         editObject={editObject}

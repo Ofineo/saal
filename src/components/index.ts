@@ -5,3 +5,4 @@ export { default as Table } from './Table';
 export { default as AddObjectForm } from './AddObjectForm';
 export { default as SearchBar } from './SearchBar';
 export { default as AutocompleteModal } from './AutocompleteModal';
+export { default as SkeletonLoader } from './SkeletonLoader';
