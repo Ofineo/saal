@@ -1,5 +1,6 @@
 import { Obj } from '@/app/types';
 import Card from '@/components/Card';
+import { Pagination } from './Pagination';
 
 interface CardsProps {
   objects: Obj[];
@@ -27,6 +28,7 @@ const Cards: React.FC<CardsProps> = ({
           />
         ))}
       </ul>
+      <Pagination />
     </section>
   );
 };
