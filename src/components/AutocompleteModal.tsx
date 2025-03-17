@@ -19,16 +19,18 @@ export default function AutocompleteModal({
   
   const [selected, setSelected] = useState<Obj | null>(null);
   const [input, setInput] = useState('');
+  const [suggestions, setSuggestions] = useState<Obj[]>([]);
+  const [isAutoCompleteOpen, setIsAutocompleteOpen] = useState(false);
 
   const handleSelect = (obj: Obj) => {
     setSelected(obj);
   };
-  
+
   const handleSaveRelation = () => {
     if (!selected) return;
     const updatedObj = objects.find(obj => obj.id === currentObj);
     if (!updatedObj) return;
-  
+
     if (!updatedObj.relations.includes(selected.id)) {
       const newObject = {
         ...updatedObj,
@@ -36,10 +38,24 @@ export default function AutocompleteModal({
       };
       updateObject(newObject);
     }
-  
+
     setModalOpen(null);
   };
-  
+
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInput(value);
+    if (value.trim()) {
+      const fetchedSuggestions = await handleItemsSearch(value);
+      setSuggestions(
+        fetchedSuggestions?.filter(obj => obj.id !== currentObj) || []
+      );
+      setIsAutocompleteOpen(true);
+    } else {
+      setIsAutocompleteOpen(false);
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -47,10 +63,13 @@ export default function AutocompleteModal({
       title='Manage Relations'
     >
       <Autocomplete
-        fetchSuggestions={handleItemsSearch}
         onSelect={handleSelect}
         input={input}
         setInput={setInput}
+        isOpen={isAutoCompleteOpen}
+        setIsOpen={setIsAutocompleteOpen}
+        handleInputChange={handleInputChange}
+        suggestions={suggestions}
       />
       <div className='flex justify-end gap-4'>
         <button

@@ -3,23 +3,23 @@ import type { Obj } from '@/app/types';
 
 type AutocompleteProps = {
   onSelect: (value: Obj) => void;
-  fetchSuggestions: (
-    query: string,
-    page?: number,
-    itemsPerPage?: number
-  ) => Promise<Obj[] | undefined>;
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isOpen: boolean;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  suggestions: Obj[];
 };
 
 const Autocomplete = ({
   onSelect,
-  fetchSuggestions,
   input,
   setInput,
+  isOpen,
+  setIsOpen,
+  handleInputChange,
+  suggestions,
 }: AutocompleteProps) => {
-  const [suggestions, setSuggestions] = useState<Obj[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -37,18 +37,6 @@ const Autocomplete = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setInput(value);
-    if (value.trim()) {
-      const fetchedSuggestions = await fetchSuggestions(value);
-      setSuggestions(fetchedSuggestions || []);
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-    }
-  };
 
   const handleSelect = (obj: Obj) => {
     setInput(obj.name);

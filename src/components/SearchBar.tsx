@@ -18,19 +18,37 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   const { handleItemsSearch } = useAppContext();
   const [input, setInput] = useState('');
+  const [suggestions, setSuggestions] = useState<Obj[]>([]);
+  const [isAutoCompleteOpen, setIsAutocompleteOpen] = useState(false);
 
   const handleSelect = (obj: Obj) => {
-    setFiltered([obj]);
     setInput('');
+    setFiltered([obj]);
   };
+
+  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInput(value);
+    if (value.trim()) {
+      const fetchedSuggestions = await handleItemsSearch(value);
+      setSuggestions(fetchedSuggestions || []);
+      setIsAutocompleteOpen(true);
+    } else {
+      setIsAutocompleteOpen(false);
+    }
+  };
+  
   return (
     <>
       <div className='flex justify-between items-center mb-10 gap-6'>
         <Autocomplete
-          fetchSuggestions={handleItemsSearch}
           onSelect={handleSelect}
           input={input}
           setInput={setInput}
+          isOpen={isAutoCompleteOpen}
+          setIsOpen={setIsAutocompleteOpen}
+          handleInputChange={handleInputChange}
+          suggestions={suggestions}
         />
         <svg
           xmlns='http://www.w3.org/2000/svg'
