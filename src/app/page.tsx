@@ -200,7 +200,7 @@ const Home = () => {
 
       <ManageRelationsModal
         isOpen={!!relationModalOpen}
-        objects={objects}
+        objects={objects.filter(obj => obj.id !== relationModalOpen)}
         selectedRelations={selectedRelations}
         handleRelationSelect={handleRelationSelect}
         handleSaveRelations={handleSaveRelations}
