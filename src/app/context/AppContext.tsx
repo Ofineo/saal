@@ -167,6 +167,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }));
   };
 
+  const handleItemsSearch = async (
+    query: string,
+    page: number = 1,
+    itemsPerPage: number = 10
+  ) => {
+    try {
+      const result = await paginator.getPage({
+        filter: { name: query },
+        page,
+        itemsPerPage,
+      });
+      return result.items;
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      return [];
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -183,6 +201,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         handlePageChange,
         handleItemsPerPageChange,
         handleSortChange,
+        handleItemsSearch,
       }}
     >
       {children}

@@ -185,7 +185,7 @@ const Home = () => {
           </button>
         </div>
       )}
-      {objects.length > 0 && (
+      {objects.length > 0 && isDesktop && (
         <div>
           <button
             className='bg-yellow-500 text-white px-2 rounded mb-4'

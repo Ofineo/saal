@@ -49,6 +49,11 @@ export interface AppContextType {
   handlePageChange: (newPage: number) => void;
   handleItemsPerPageChange: (newItemsPerPage: number) => void;
   handleSortChange: (sortBy: string, sortDirection: SortBy) => void;
+  handleItemsSearch: (
+    query: string,
+    page?: number,
+    itemsPerPage?: number
+  ) => Promise<Obj[] | undefined>;
 }
 
 export type SortBy = 'asc' | 'desc';

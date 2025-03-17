@@ -1,14 +1,9 @@
+import { Obj } from '@/app/types';
 import Card from '@/components/Card';
 
 interface CardsProps {
-  objects: {
-    id: string;
-    name: string;
-    description: string;
-    type: string;
-    relations: string[];
-  }[];
-  getObjectById: (id: string) => { name: string } | undefined;
+  objects: Obj[];
+  getObjectById: (id: string) => Obj | undefined;
   onDelete: (id: string) => void;
   onManageRelations: (id: string) => void;
 }
@@ -25,10 +20,7 @@ const Cards: React.FC<CardsProps> = ({
         {objects.map(obj => (
           <Card
             key={obj.id}
-            name={obj.name}
-            description={obj.description}
-            type={obj.type}
-            relations={obj.relations}
+            obj={obj}
             getObjectById={getObjectById}
             onDelete={() => onDelete(obj.id)}
             onManageRelations={() => onManageRelations(obj.id)}
