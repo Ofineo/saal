@@ -43,3 +43,9 @@ export class LocalStorageService<T extends { id: string }>
     }
   }
 }
+
+export function createLocalStorageService<T extends { id: string }>(
+  key: string
+): StorageService<T> {
+  return new LocalStorageService<T>(key);
+}

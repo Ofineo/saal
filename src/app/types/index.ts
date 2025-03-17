@@ -1,3 +1,5 @@
+import { PaginationOptions, PaginationResult } from '@/services';
+
 type MakePropsOptional<T, K extends keyof T> = {
   [P in keyof T]?: T[P];
 } & Required<Pick<T, K>>;
@@ -42,4 +44,11 @@ export interface AppContextType {
   getObjectById: (id: string) => Obj | undefined;
   loading: boolean;
   error: string | null;
+  pagination: PaginationResult<Obj> | null;
+  paginationOptions: PaginationOptions;
+  handlePageChange: (newPage: number) => void;
+  handleItemsPerPageChange: (newItemsPerPage: number) => void;
+  handleSortChange: (sortBy: string, sortDirection: SortBy) => void;
 }
+
+export type SortBy = 'asc' | 'desc';

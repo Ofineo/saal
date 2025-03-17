@@ -138,7 +138,6 @@ const Home = () => {
   ) : (
     <Table
       data={filtered}
-      getObjectById={getObjectById}
       showActions={showActions}
       setShowActions={setShowActions}
       handleDeleteModalOpen={handleDeleteModalOpen}

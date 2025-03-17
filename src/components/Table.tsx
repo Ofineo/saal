@@ -1,8 +1,9 @@
+import { useAppContext } from '@/app/context/AppContext';
+import { Pagination } from './Pagination';
 import type { Obj } from '@/app/types';
 
 interface TableProps {
   data: Obj[];
-  getObjectById: (id: string) => Obj | undefined;
   showActions: string | null;
   setShowActions: (id: string | null) => void;
   handleDeleteModalOpen: (id: string) => void;
@@ -12,13 +13,14 @@ interface TableProps {
 
 const Table = ({
   data,
-  getObjectById,
   showActions,
   setShowActions,
   handleDeleteModalOpen,
   handleManageRelations,
   handleEditModalOpen,
 }: TableProps) => {
+  const { getObjectById } = useAppContext();
+
   return (
     <section className='overflow-x-auto'>
       <table className='min-w-full table-auto mb-40'>
@@ -129,6 +131,8 @@ const Table = ({
           ))}
         </tbody>
       </table>
+
+      <Pagination />
     </section>
   );
 };

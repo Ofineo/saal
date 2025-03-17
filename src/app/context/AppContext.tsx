@@ -2,13 +2,22 @@
 
 import React, { useState, useContext, createContext, useEffect } from 'react';
 
-import { LocalStorageService, StorageService } from '@/services';
-import type { AppContextType, Obj } from '../types';
+import {
+  createLocalStoragePaginator,
+  createLocalStorageService,
+  PaginationOptions,
+  PaginationResult,
+} from '@/services';
+import type { AppContextType, Obj, SortBy } from '../types';
 import { isLocalStorageSeeded, seedLocalStorage } from '../helpers';
 
-const storageService: StorageService<Obj> = new LocalStorageService<Obj>(
-  'objects'
+export const storageService = createLocalStorageService<Obj>('objects');
+
+export const paginator = createLocalStoragePaginator<Obj>(
+  storageService,
+  'my-pagination-key'
 );
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 // Custom hook for accessing the AppContext
@@ -27,15 +36,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const [objects, setObjects] = useState<Obj[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [paginationState, setPaginationState] =
+    useState<PaginationResult<Obj> | null>(null);
+  const [paginationOptions, setPaginationOptions] = useState<PaginationOptions>(
+    {
+      page: 1,
+      itemsPerPage: 5,
+      sortBy: 'name',
+      sortDirection: 'asc',
+      filter: {},
+    }
+  );
 
   useEffect(() => {
-    // Fetch objects on initial render
-    const fetchObjects = async () => {
+    // Load pagination state from localStorage on initial render
+    const loadPaginationState = async () => {
+      const savedState = await paginator.loadState();
+      if (savedState) {
+        setPaginationOptions(savedState);
+      }
+    };
+    loadPaginationState();
+  }, []);
+
+  useEffect(() => {
+    const fetchPaginatedObjects = async () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await storageService.getAll();
-        setObjects(data || []);
+        const result = await paginator.getPage(paginationOptions);
+        setPaginationState(result);
+        setObjects(result.items);
       } catch (err) {
         console.error(err);
         setError('Failed to load objects');
@@ -43,8 +74,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         setLoading(false);
       }
     };
-    fetchObjects();
-  }, []);
+    fetchPaginatedObjects();
+  }, [paginationOptions]);
 
   const seedObjects = async () => {
     // Seed localStorage if not already seeded
@@ -52,7 +83,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       seedLocalStorage();
     }
     if (isLocalStorageSeeded()) {
-      setObjects(await storageService.getAll());
+      const result = await paginator.getPage(paginationOptions);
+      setPaginationState(result);
+      setObjects(result.items);
     }
   };
 
@@ -61,7 +94,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       await storageService.create(obj);
-      setObjects(await storageService.getAll());
+      const result = await paginator.getPage(paginationOptions);
+      setPaginationState(result);
+      setObjects(result.items);
     } catch (err) {
       console.error(err);
       setError('Failed to add object');
@@ -75,7 +110,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       await storageService.update(updatedObj);
-      setObjects(await storageService.getAll());
+
+      const result = await paginator.getPage(paginationOptions);
+      setPaginationState(result);
+      setObjects(result.items);
     } catch (err) {
       console.error(err);
       setError('Failed to update object');
@@ -89,7 +127,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       await storageService.delete(id);
-      setObjects(await storageService.getAll());
+
+      const result = await paginator.getPage(paginationOptions);
+      setPaginationState(result);
+      setObjects(result.items);
     } catch (err) {
       console.error(err);
       setError('Failed to delete object');
@@ -100,6 +141,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getObjectById = (id: string) => {
     return objects.find(obj => obj.id === id);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPaginationOptions(prev => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setPaginationOptions(prev => ({
+      ...prev,
+      itemsPerPage: newItemsPerPage,
+      page: 1,
+    }));
+  };
+
+  const handleSortChange = (sortBy: string, sortDirection: SortBy) => {
+    setPaginationOptions(prev => ({
+      ...prev,
+      sortBy,
+      sortDirection,
+      page: 1,
+    }));
   };
 
   return (
@@ -113,6 +178,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
         loading,
         error,
         seedObjects,
+        pagination: paginationState,
+        paginationOptions,
+        handlePageChange,
+        handleItemsPerPageChange,
+        handleSortChange,
       }}
     >
       {children}
