@@ -22,7 +22,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [isAutoCompleteOpen, setIsAutocompleteOpen] = useState(false);
 
   const handleSelect = (obj: Obj) => {
-    setInput('');
     setFiltered([obj]);
   };
 
@@ -57,7 +56,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
           strokeWidth={1.5}
           stroke='currentColor'
           className='size-6'
-          onClick={reset}
+          onClick={() => {
+            reset();
+            setInput('');
+          }}
         >
           <path
             strokeLinecap='round'
