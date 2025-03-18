@@ -7,3 +7,4 @@ export { default as SearchBar } from './SearchBar';
 export { default as AutocompleteModal } from './AutocompleteModal';
 export { default as SkeletonLoader } from './SkeletonLoader';
 export { default as Filters } from './Filters';
+export { default as AutoCompleteFormInput } from './AutoCompleteFormInput';

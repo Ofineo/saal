@@ -1,7 +1,7 @@
 import { useAppContext } from '@/app/context/AppContext';
 import { Obj } from '@/app/types';
 import React, { useState } from 'react';
-import AutocompleteModal from './AutocompleteModal';
+import AutoCompleteFormInput from './AutoCompleteFormInput';
 
 interface CardProps {
   obj: Obj;
@@ -11,31 +11,44 @@ interface CardProps {
 }
 
 const AddRelationBtn = ({
-  setAutocompleteModalOpen,
-  objId,
+  setAutocompleteOpen,
+  isAutocompleteOpen,
 }: {
-  setAutocompleteModalOpen: React.Dispatch<React.SetStateAction<string | null>>;
-  objId: string;
+  setAutocompleteOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isAutocompleteOpen: boolean;
 }) => {
   return (
     <button
       className='border-2 border-solid rounded-full ml-auto'
-      onClick={() => setAutocompleteModalOpen(objId)}
+      onClick={() => setAutocompleteOpen(!isAutocompleteOpen)}
     >
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        fill='none'
-        viewBox='0 0 24 24'
-        strokeWidth={1.5}
-        stroke='currentColor'
-        className='size-6 inline-block p-0.5'
-      >
-        <path
-          strokeLinecap='round'
-          strokeLinejoin='round'
-          d='M12 5v14m-7-7h14'
-        />
-      </svg>
+      {!isAutocompleteOpen ? (
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          fill='none'
+          viewBox='0 0 24 24'
+          strokeWidth={1.5}
+          stroke='currentColor'
+          className='size-6 inline-block p-0.5'
+        >
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            d='M12 5v14m-7-7h14'
+          />
+        </svg>
+      ) : (
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          fill='none'
+          viewBox='0 0 24 24'
+          strokeWidth={1.5}
+          stroke='currentColor'
+          className='size-6 inline-block p-0.5'
+        >
+          <path strokeLinecap='round' strokeLinejoin='round' d='M5 12h14' />
+        </svg>
+      )}
     </button>
   );
 };
@@ -48,9 +61,8 @@ export default function Card({
 }: CardProps) {
   const { objects, updateObject } = useAppContext();
 
-  const [autocompleteModalOpen, setAutocompleteModalOpen] = useState<
-    string | null
-  >(null);
+  const [input, setInput] = useState('');
+  const [isAutocompleteOpen, setAutocompleteOpen] = useState(false);
 
   const handleRemoveRelation = (currentObj: Obj, relation: Obj) => {
     const updatedObjects = objects.map(obj => {
@@ -64,6 +76,23 @@ export default function Card({
     });
     updateObject(updatedObjects.find(obj => obj.id === relation.id)!);
     updateObject(updatedObjects.find(obj => obj.id === currentObj.id)!);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const filteredSuggestions = objects.filter(obj =>
+    obj.name.toLowerCase().includes(input.toLowerCase())
+  );
+
+  const handleSelect = (currentObj: Obj, obj: Obj) => {
+    // Add the selected relation to the current object
+    if (!currentObj.relations.includes(obj.id)) {
+      currentObj.relations.push(obj.id);
+    }
+    updateObject(currentObj);
+    setInput('');
   };
 
   return (
@@ -126,9 +155,19 @@ export default function Card({
                   </React.Fragment>
                 ) : null;
               })}
+              {isAutocompleteOpen && (
+                <AutoCompleteFormInput
+                  input={input}
+                  setInput={setInput}
+                  suggestions={filteredSuggestions.filter(s => s.id !== obj.id)}
+                  onSelect={handleSelect}
+                  handleInputChange={handleInputChange}
+                  currentObj={obj}
+                />
+              )}
               <AddRelationBtn
-                setAutocompleteModalOpen={setAutocompleteModalOpen}
-                objId={obj.id}
+                setAutocompleteOpen={setAutocompleteOpen}
+                isAutocompleteOpen={isAutocompleteOpen}
               />
             </div>
           ) : (
@@ -137,8 +176,8 @@ export default function Card({
                 <p>No relations</p>
               </span>
               <AddRelationBtn
-                setAutocompleteModalOpen={setAutocompleteModalOpen}
-                objId={obj.id}
+                setAutocompleteOpen={setAutocompleteOpen}
+                isAutocompleteOpen={isAutocompleteOpen}
               />
             </div>
           )}
@@ -158,11 +197,6 @@ export default function Card({
           </button>
         </div>
       </li>
-      <AutocompleteModal
-        currentObj={obj.id}
-        setModalOpen={setAutocompleteModalOpen}
-        isOpen={!!autocompleteModalOpen}
-      />
     </>
   );
 };
