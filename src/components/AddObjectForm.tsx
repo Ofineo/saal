@@ -1,18 +1,51 @@
-import { Obj, ObjectType } from '@/app/types';
+import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+
+import { useAppContext } from '@/app/context/AppContext';
+import { type Obj, ObjectType } from '@/app/types';
 
 interface AddObjectFormProps {
-  newObj: Omit<Obj, 'id'>;
-  setNewObj: (newObj: Omit<Obj, 'id'>) => void;
-  handleAdd: () => void;
-  handleCancel: () => void;
+  setFormError: (value: React.SetStateAction<string>) => void;
+  setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AddObjectForm: React.FC<AddObjectFormProps> = ({
-  newObj,
-  setNewObj,
-  handleAdd,
-  handleCancel,
+  setFormError,
+  setShowForm,
 }: AddObjectFormProps) => {
+  const { addObject } = useAppContext();
+
+  const [newObj, setNewObj] = useState<Omit<Obj, 'id'>>({
+    name: '',
+    description: '',
+    type: ObjectType.Human,
+    relations: [],
+  });
+
+  const handleShowForm = (showForm: boolean) => setShowForm(showForm);
+
+  const handleFormCancel = () => {
+    handleShowForm(false);
+    setFormError('');
+  };
+
+  // Handle adding new object with validation
+  const handleAdd = () => {
+    if (newObj.name.trim() && newObj.description.trim() && newObj.type.trim()) {
+      const objToAdd: Obj = { id: uuidv4(), ...newObj, relations: [] };
+      addObject(objToAdd);
+      setNewObj({
+        name: '',
+        description: '',
+        type: ObjectType.Human,
+        relations: [],
+      });
+      setShowForm(false);
+    } else {
+      setFormError('All fields are required');
+    }
+  };
+
   return (
     <form
       className='mb-4'
@@ -63,7 +96,7 @@ const AddObjectForm: React.FC<AddObjectFormProps> = ({
       <div className='grid grid-cols-1 gap-4 mb-10 grid-cols-2'>
         <button
           type='button'
-          onClick={handleCancel}
+          onClick={handleFormCancel}
           className='bg-red-500 text-white p-2 rounded w-full'
         >
           Cancel

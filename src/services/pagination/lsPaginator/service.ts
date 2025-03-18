@@ -15,18 +15,14 @@ export class LocalStoragePaginator<T extends { id: string }> implements Paginati
   async getPage(options: PaginationOptions): Promise<PaginationResult<T>> {
     const { page, itemsPerPage, sortBy, sortDirection, filter } = options;
     
-    // Save the current pagination state
     await this.saveState(options);
-    
-    // Get all items from storage
+
     let allItems = await this.storageService.getAll();
-    
-    // Apply filtering if provided
+
     if (filter) {
       allItems = this.applyFilter(allItems, filter);
     }
     
-    // Apply sorting if provided
     if (sortBy) {
       allItems = this.applySorting(allItems, sortBy, sortDirection || 'asc');
     }
@@ -87,12 +83,13 @@ export class LocalStoragePaginator<T extends { id: string }> implements Paginati
       return Object.entries(filter).every(([key, value]) => {
         if (value === undefined || value === null) return true;
         
-        // Handle string search (case insensitive)
-        if (typeof value === 'string' && typeof (item as any)[key] === 'string') {
+        if (
+          typeof value === 'string' &&
+          typeof (item as any)[key] === 'string'
+        ) {
           return (item as any)[key].toLowerCase().includes(value.toLowerCase());
         }
         
-        // Handle exact match
         return (item as any)[key] === value;
       });
     });
@@ -103,13 +100,11 @@ export class LocalStoragePaginator<T extends { id: string }> implements Paginati
       const valueA = (a as any)[sortBy];
       const valueB = (b as any)[sortBy];
       
-      // Handle string comparison
       if (typeof valueA === 'string' && typeof valueB === 'string') {
         const comparison = valueA.localeCompare(valueB);
         return direction === 'asc' ? comparison : -comparison;
       }
       
-      // Handle number comparison
       if (valueA < valueB) return direction === 'asc' ? -1 : 1;
       if (valueA > valueB) return direction === 'asc' ? 1 : -1;
       return 0;

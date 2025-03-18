@@ -55,6 +55,11 @@ export default function AutocompleteModal({
       setIsAutocompleteOpen(false);
     }
   };
+  
+  const handleCancel = () => {
+    setModalOpen(null);
+    setInput('');
+  };
 
   return (
     <Modal
@@ -73,7 +78,7 @@ export default function AutocompleteModal({
       />
       <div className='flex justify-end gap-4'>
         <button
-          onClick={() => setModalOpen(null)}
+          onClick={handleCancel}
           className='bg-red-500 text-white px-4 py-2 rounded mt-4 ml-2'
         >
           Cancel

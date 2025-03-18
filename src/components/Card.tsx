@@ -10,12 +10,42 @@ interface CardProps {
   getObjectById: (id: string) => Obj | undefined;
 }
 
-const Card: React.FC<CardProps> = ({
+const AddRelationBtn = ({
+  setAutocompleteModalOpen,
+  objId,
+}: {
+  setAutocompleteModalOpen: React.Dispatch<React.SetStateAction<string | null>>;
+  objId: string;
+}) => {
+  return (
+    <button
+      className='border-2 border-solid rounded-full ml-auto'
+      onClick={() => setAutocompleteModalOpen(objId)}
+    >
+      <svg
+        xmlns='http://www.w3.org/2000/svg'
+        fill='none'
+        viewBox='0 0 24 24'
+        strokeWidth={1.5}
+        stroke='currentColor'
+        className='size-6 inline-block p-0.5'
+      >
+        <path
+          strokeLinecap='round'
+          strokeLinejoin='round'
+          d='M12 5v14m-7-7h14'
+        />
+      </svg>
+    </button>
+  );
+};
+
+export default function Card({
   obj,
   onDelete,
   onManageRelations,
   getObjectById,
-}) => {
+}: CardProps) {
   const { objects, updateObject } = useAppContext();
 
   const [autocompleteModalOpen, setAutocompleteModalOpen] = useState<
@@ -96,50 +126,20 @@ const Card: React.FC<CardProps> = ({
                   </React.Fragment>
                 ) : null;
               })}
-              <button
-                className='border-2 border-solid rounded-full ml-auto'
-                onClick={() => setAutocompleteModalOpen(obj.id)}
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
-                  className='size-6 inline-block p-0.5'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M12 5v14m-7-7h14'
-                  />
-                </svg>
-              </button>
+              <AddRelationBtn
+                setAutocompleteModalOpen={setAutocompleteModalOpen}
+                objId={obj.id}
+              />
             </div>
           ) : (
             <div className='flex flex-wrap gap-2 border p-1 rounded mb-2 w-full bg-gray-50'>
               <span className='border px-1 rounded bg-gray-50'>
                 <p>No relations</p>
               </span>
-              <button
-                className='border-2 border-solid rounded-full ml-auto'
-                onClick={() => setAutocompleteModalOpen(obj.id)}
-              >
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  strokeWidth={1.5}
-                  stroke='currentColor'
-                  className='size-6 inline-block p-0.5'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M12 5v14m-7-7h14'
-                  />
-                </svg>
-              </button>
+              <AddRelationBtn
+                setAutocompleteModalOpen={setAutocompleteModalOpen}
+                objId={obj.id}
+              />
             </div>
           )}
         </div>
@@ -166,5 +166,3 @@ const Card: React.FC<CardProps> = ({
     </>
   );
 };
-
-export default Card;

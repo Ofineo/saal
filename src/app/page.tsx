@@ -36,12 +36,6 @@ const Home = () => {
   const [formError, setFormError] = useState('');
   const [filtered, setFiltered] = useState(objects);
   const [showForm, setShowForm] = useState(false);
-  const [newObj, setNewObj] = useState<Omit<Obj, 'id'>>({
-    name: '',
-    description: '',
-    type: ObjectType.Human,
-    relations: [],
-  });
   const [selectedRelations, setSelectedRelations] = useState<string[]>([]);
   const [relationModalOpen, setRelationModalOpen] = useState<string | null>(
     null
@@ -56,30 +50,6 @@ const Home = () => {
   }, [objects]);
 
   const handleResetFilter = () => setFiltered(objects);
-
-  // Handle adding new object with validation
-  const handleAdd = () => {
-    if (newObj.name.trim() && newObj.description.trim() && newObj.type.trim()) {
-      const objToAdd: Obj = { id: uuidv4(), ...newObj, relations: [] };
-      addObject(objToAdd);
-      setNewObj({
-        name: '',
-        description: '',
-        type: ObjectType.Human,
-        relations: [],
-      });
-      setShowForm(false);
-    } else {
-      setFormError('All fields are required');
-    }
-  };
-
-  const handleShowForm = (showForm: boolean) => setShowForm(showForm);
-
-  const handleFormCancel = () => {
-    handleShowForm(false);
-    setFormError('');
-  };
 
   const handleManageRelations = (objectId: string) => {
     setRelationModalOpen(objectId);
@@ -145,6 +115,7 @@ const Home = () => {
         handleEditModalOpen={handleEditModalOpen}
       />
     );
+
   return (
     <main className='p-4 max-w-[950px] mx-auto'>
       <h1 className='text-2xl mb-4'>Object Management</h1>
@@ -158,12 +129,7 @@ const Home = () => {
       <div className='text-red-500 mb-4'>{error || formError}</div>
 
       {showForm && (
-        <AddObjectForm
-          newObj={newObj}
-          setNewObj={setNewObj}
-          handleAdd={handleAdd}
-          handleCancel={handleFormCancel}
-        />
+        <AddObjectForm setFormError={setFormError} setShowForm={setShowForm} />
       )}
 
       {objects.length === 0 && (
